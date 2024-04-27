@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -8,20 +8,26 @@ import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: -3,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
-}));
-
-const Navigation = () => {
-  const [value, setValue] = React.useState(0);
+const StyledTab = styled(Tab)(({ theme }) => ({
+    borderRadius: '20px',
+    margin: theme.spacing(0.5),
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.common.white,
+      opacity: 1,
+    },
+  }));
+  
+const Navigation = ({ onChangeTab }) => {
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    onChangeTab(newValue); // Pass this new value back to App.js
   };
 
   return (
@@ -40,14 +46,12 @@ const Navigation = () => {
           aria-label="navigation tabs"
           textColor="primary"
           indicatorColor="primary"
-          sx={{ '.MuiTabs-indicator': { backgroundColor: '#635ee7' } }}
+          
         >
-          <Tab label={<StyledBadge>All messages</StyledBadge>} />
-          <Tab label={<StyledBadge>Messenger</StyledBadge>} />
-          <Tab label="Instagram" />
-          <Tab label={<StyledBadge>WhatsApp</StyledBadge>} />
-          <Tab label="Facebook comments" />
-          <Tab label={<StyledBadge>Instagram comments</StyledBadge>} />
+          <StyledTab label="All messages" />
+          <StyledTab label="Messenger" />
+          <StyledTab label="Instagram" />
+          <StyledTab label="WhatsApp" />
         </Tabs>
       </Box>
     </AppBar>

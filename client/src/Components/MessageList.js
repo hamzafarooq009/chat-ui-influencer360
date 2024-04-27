@@ -10,21 +10,26 @@ import MessageIcon from '@mui/icons-material/Message';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CommentIcon from '@mui/icons-material/Comment';
 
-const MessageList = ({ users, onSelectUser, selectedUser }) => {
+const MessageList = ({ users, onSelectUser, selectedUser, selectedTab }) => {
     // Function to get the icon based on the platform
     const getPlatformIcon = (platform) => {
         switch(platform) {
             case 'Instagram': return <InstagramIcon />;
             case 'Messenger': return <MessageIcon />;
             case 'WhatsApp': return <WhatsAppIcon />;
-            case 'Facebook': return <CommentIcon />;
             default: return null;
         }
     };
 
+    // Filter the users based on the selectedTab, if it's not "All"
+  const filteredUsers = selectedTab === "All"
+  ? users
+  : users.filter(user => user.platform === selectedTab);
+
+
     return (
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
                 <ListItem
                     key={user.username} // Use username as a unique key
                     alignItems="flex-start"

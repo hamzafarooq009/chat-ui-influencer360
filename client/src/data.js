@@ -6,6 +6,8 @@ export const usersData = [
       image: "https://via.placeholder.com/150/0000FF/808080?Text=JohnDoe",
       coverImage: "https://via.placeholder.com/350x150/0000FF/808080?Text=JohnDoeCover",
       bio: "Bio of John Doe",
+      platform: "Instagram",
+
     },
     {
       name: "Hamza Farooq",
@@ -13,6 +15,8 @@ export const usersData = [
       image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=HamzaF",
       coverImage: "https://via.placeholder.com/350x150/FF0000/FFFFFF?Text=HamzaFCover",
       bio: "Bio of Hamza Farooq",
+      platform: "WhatsApp",
+
     },
     {
       name: "Alice Johnson",
@@ -20,8 +24,9 @@ export const usersData = [
       image: "https://via.placeholder.com/150/FFFF00/000000?Text=AliceJ",
       coverImage: "https://via.placeholder.com/350x150/FFFF00/000000?Text=AliceJCover",
       bio: "Bio of Alice Johnson",
+      platform: "Messenger",
+
     },
-    // ... more user profiles
   ];
   
   

@@ -29,6 +29,9 @@ function App() {
   const [allConversations, setAllConversations] = useState(dummyConversations);
   const [selectedUserProfile, setSelectedUserProfile] = useState(usersData[0]);
 
+
+  const tabNames = ["All", "Messenger", "Instagram", "WhatsApp"];
+
   // const { conversations } = useContext(ConversationContext);
 
   const handleSelectUser = (name) => {
@@ -45,14 +48,18 @@ function App() {
     setSearchQuery(query);
     // Here you would normally filter your messages based on the search query
   };
-
-  const handleSelectTab = (event, newValue) => {
-    setSelectedTab(newValue);
-    const newFilteredUsers =
-      newValue === "All"
-        ? usersData
-        : usersData.filter((user) => user.platform === newValue);
-    setFilteredUsers(newFilteredUsers); // Update the state with the filtered users
+  const handleSelectTab = (tabIndex) => {
+    const tab = tabNames[tabIndex];
+    setSelectedTab(tab);
+    if (tab === "All") {
+      setFilteredUsers(usersData);
+    } else {
+      // Assuming you have a way to determine the platform in usersData or another state that holds this info
+      const newFilteredUsers = usersData.filter((user) => user.platform === tab);
+      setFilteredUsers(newFilteredUsers);
+      // console.log("filteredUsers: ", filteredUsers)
+      // console.log("users: ", users)
+    }
   };
 
   const handleSendMessage = (newMessageContent) => {
@@ -78,7 +85,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="fixed">
-        <Navigation />
+      <Navigation onChangeTab={handleSelectTab} />
       </AppBar>
       <Toolbar />
       <Grid
@@ -96,6 +103,7 @@ function App() {
               users={users}
               onSelectUser={handleSelectUser}
               selectedUser={selectedUserName}
+              selectedTab={selectedTab} // Pass the selectedTab state to MessageList
             />
           </Paper>
         </Grid>
