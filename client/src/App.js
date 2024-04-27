@@ -1,119 +1,113 @@
-import React, {useState} from "react"
-import { ThemeProvider, Paper, CssBaseline, Grid, AppBar, Toolbar, Box } from '@mui/material';
-import theme from './theme';
+import React, { useState, useContext } from "react";
+import {
+  ThemeProvider,
+  Paper,
+  CssBaseline,
+  Grid,
+  AppBar,
+  Toolbar,
+  Box,
+} from "@mui/material";
+import theme from "./theme";
 
-import SearchBar from './Components/SearchBar';
-import Navigation from './Components/Navigation';
-import MessageList from './Components/MessageList';
-import ConversationPane from './Components/ConversationPane';
-import ProfilePreview from './Components/ProfilePreview';
+import SearchBar from "./Components/SearchBar";
+import Navigation from "./Components/Navigation";
+import MessageList from "./Components/MessageList";
+import ConversationPane from "./Components/ConversationPane";
+import ProfilePreview from "./Components/ProfilePreview";
+// import { ConversationContext } from './Components/ConversationContext';
 
-
-
-const userProfile = {
-  name: 'Jane Doe',
-  username: 'janedoe',
-  image: '/path/to/profile-pic.jpg',
-  coverImage: '/path/to/cover-image.jpg',
-  bio: 'Life explorer. Music lover. Foodie. Traveler.'
-};
-
-// Dummy messages data
-const dummyMessages = [
-  { senderName: 'John Doe', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  { senderName: 'Hamza Farooq', senderImage: '/path/to/image.jpg', text: 'Hello, how are you?', date: 'Apr 25' },
-  // ... more messages
-];
-
-const dummyConversations = {
-  "John Doe": [
-    { from: 'John Doe', date: '10:30 AM', content: 'Hello, how are you?' },
-    { from: 'You', date: '10:32 AM', content: 'I am fine, thanks! How about you?' },
-    // ... more messages
-  ],
-  "Hamza Farooq": [
-    { from: 'Hamza Farooq', date: '11:00 AM', content: 'Hey! Are we still on for today?' },
-    { from: 'You', date: '11:05 AM', content: 'Yes, see you in the evening.' },
-    // ... more messages
-  ],
-  // ... conversations for other users
-};
+import { usersData, dummyConversations, users } from "./data";
 
 function App() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [selectedUserName, setSelectedUserName] = useState('');
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUserName, setSelectedUserName] = useState("");
   const [conversation, setConversation] = useState([]);
+  const [selectedTab, setSelectedTab] = useState("All"); // Keep track of the selected tab
+  const [filteredUsers, setFilteredUsers] = useState(usersData); // Initialize with all users
+  // Add state to hold the entire conversation including new messages
+  const [allConversations, setAllConversations] = useState(dummyConversations);
+  const [selectedUserProfile, setSelectedUserProfile] = useState(usersData[0]);
 
+  // const { conversations } = useContext(ConversationContext);
 
-
-  const handleSelectMessage = (message) => {
-    setSelectedMessage(message);
-    // Assuming dummyConversation is an object with user names as keys and arrays of message objects as values.
-    const userMessages = dummyConversations[message.senderName];
-    if (Array.isArray(userMessages)) {
-      setConversation(userMessages);
-    } else {
-      // If it's not an array, log an error or handle appropriately
-      console.error('User messages are not in an array format:', userMessages);
-      setConversation([]); // Reset to an empty array to avoid crashing
-    }
+  const handleSelectUser = (name) => {
+    setSelectedUserName(name);
+    // Find the user profile from usersData
+    const userProfile = usersData.find((user) => user.name === name);
+    setSelectedUserProfile(userProfile || usersData[0]);
+    const userConversation = dummyConversations[name] || [];
+    setConversation(userConversation);
+    // ...rest of the code
   };
-  
 
   const handleSearch = (query) => {
     setSearchQuery(query);
     // Here you would normally filter your messages based on the search query
   };
-    // When a user clicks on a user/message in the MessageList
-  const handleSelectUser = (userName) => {
-    setSelectedUser(userName);
-    setConversation(dummyConversations[userName] || []);
+
+  const handleSelectTab = (event, newValue) => {
+    setSelectedTab(newValue);
+    const newFilteredUsers =
+      newValue === "All"
+        ? usersData
+        : usersData.filter((user) => user.platform === newValue);
+    setFilteredUsers(newFilteredUsers); // Update the state with the filtered users
   };
 
+  const handleSendMessage = (newMessageContent) => {
+    const newMessage = {
+      from: "You",
+      source: "Direct",
+      date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content: newMessageContent,
+    };
+  
+    // Copy the existing conversations and add the new message to the selected user's conversation
+    setAllConversations(prevConversations => ({
+      ...prevConversations,
+      [selectedUserName]: [...(prevConversations[selectedUserName] || []), newMessage],
+    }));
+  
+    // Now update the current conversation that is being displayed
+    setConversation(prevConversation => [...prevConversation, newMessage]);
+  };
+  
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="fixed">
-        <Toolbar>
-          <Navigation />
-        </Toolbar>
+        <Navigation />
       </AppBar>
-      <Toolbar /> {/* Spacer for AppBar */}
-      <Grid container spacing={2} sx={{ pt: 8, px: 2, maxWidth: '100%', margin: '0 auto' }}>
-        {/* Users Section */}
+      <Toolbar />
+      <Grid
+        container
+        spacing={2}
+        sx={{ pt: 8, px: 2, maxWidth: "100%", margin: "0 auto" }}
+      >
         <Grid item xs={12} md={3}>
-          <Paper elevation={3} sx={{ maxHeight: 'calc(100vh - 64px)', overflowY: 'auto' }}>
-            <SearchBar onSearch={handleSearch} />
-            <MessageList 
-              users={Object.keys(dummyConversations)} 
-              onSelectUser={handleSelectUser} 
-              selectedUser={selectedUser}
+          <Paper
+            elevation={3}
+            sx={{ maxHeight: "calc(100vh - 64px)", overflowY: "auto" }}
+          >
+            <SearchBar onSearch={setSearchQuery} />
+            <MessageList
+              users={users}
+              onSelectUser={handleSelectUser}
+              selectedUser={selectedUserName}
             />
           </Paper>
         </Grid>
-        {/* Conversation Section */}
         <Grid item xs={12} md={6}>
-        <ConversationPane conversation={conversation} />
+          <ConversationPane conversation={conversation} onSendMessage={handleSendMessage}/>
         </Grid>
-        {/* Profile Section */}
         <Grid item xs={12} md={3}>
-          <ProfilePreview profile={userProfile} />
+          <ProfilePreview profile={selectedUserProfile} />
         </Grid>
       </Grid>
     </ThemeProvider>
   );
-};
+}
 
 export default App;
