@@ -15,6 +15,7 @@ import Navigation from "./Components/Navigation";
 import MessageList from "./Components/MessageList";
 import ConversationPane from "./Components/ConversationPane";
 import ProfilePreview from "./Components/ProfilePreview";
+
 // import { ConversationContext } from './Components/ConversationContext';
 
 import { usersData, dummyConversations, users } from "./data";
@@ -28,9 +29,14 @@ function App() {
   // Add state to hold the entire conversation including new messages
   const [allConversations, setAllConversations] = useState(dummyConversations);
   const [selectedUserProfile, setSelectedUserProfile] = useState(usersData[0]);
+  const [isProfilePreviewOpen, setIsProfilePreviewOpen] = useState(false);
 
 
   const tabNames = ["All", "Messenger", "Instagram", "WhatsApp"];
+
+  const toggleProfilePreview = () => {
+    setIsProfilePreviewOpen(!isProfilePreviewOpen);
+  };
 
   // const { conversations } = useContext(ConversationContext);
 
@@ -55,7 +61,9 @@ function App() {
       setFilteredUsers(usersData);
     } else {
       // Assuming you have a way to determine the platform in usersData or another state that holds this info
-      const newFilteredUsers = usersData.filter((user) => user.platform === tab);
+      const newFilteredUsers = usersData.filter(
+        (user) => user.platform === tab
+      );
       setFilteredUsers(newFilteredUsers);
       // console.log("filteredUsers: ", filteredUsers)
       // console.log("users: ", users)
@@ -66,26 +74,32 @@ function App() {
     const newMessage = {
       from: "You",
       source: "Direct",
-      date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       content: newMessageContent,
     };
-  
+
     // Copy the existing conversations and add the new message to the selected user's conversation
-    setAllConversations(prevConversations => ({
+    setAllConversations((prevConversations) => ({
       ...prevConversations,
-      [selectedUserName]: [...(prevConversations[selectedUserName] || []), newMessage],
+      [selectedUserName]: [
+        ...(prevConversations[selectedUserName] || []),
+        newMessage,
+      ],
     }));
-  
+
     // Now update the current conversation that is being displayed
-    setConversation(prevConversation => [...prevConversation, newMessage]);
+    setConversation((prevConversation) => [...prevConversation, newMessage]);
   };
-  
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Box>
       <AppBar position="fixed">
-      <Navigation onChangeTab={handleSelectTab} />
+        <Navigation onChangeTab={handleSelectTab} />
       </AppBar>
       <Toolbar />
       <Grid
@@ -108,12 +122,17 @@ function App() {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <ConversationPane conversation={conversation} onSendMessage={handleSendMessage}/>
+          <ConversationPane
+            conversation={conversation}
+            onSendMessage={handleSendMessage}
+            selectedUser={selectedUserProfile} // Pass the selected user profile here
+          />
         </Grid>
         <Grid item xs={12} md={3}>
           <ProfilePreview profile={selectedUserProfile} />
         </Grid>
       </Grid>
+      </Box>
     </ThemeProvider>
   );
 }

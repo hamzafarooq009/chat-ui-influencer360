@@ -7,7 +7,6 @@ export const usersData = [
       coverImage: "https://via.placeholder.com/350x150/0000FF/808080?Text=JohnDoeCover",
       bio: "Bio of John Doe",
       platform: "Instagram",
-
     },
     {
       name: "Hamza Farooq",
@@ -16,7 +15,6 @@ export const usersData = [
       coverImage: "https://via.placeholder.com/350x150/FF0000/FFFFFF?Text=HamzaFCover",
       bio: "Bio of Hamza Farooq",
       platform: "WhatsApp",
-
     },
     {
       name: "Alice Johnson",
@@ -25,10 +23,66 @@ export const usersData = [
       coverImage: "https://via.placeholder.com/350x150/FFFF00/000000?Text=AliceJCover",
       bio: "Bio of Alice Johnson",
       platform: "Messenger",
-
     },
+    // Additional users added
+    {
+      name: "David Smith",
+      username: "davidsmith",
+      image: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=DavidS",
+      coverImage: "https://via.placeholder.com/350x150/FF0000/FFFFFF?Text=DavidSCover",
+      bio: "Enthusiastic developer and coffee lover",
+      platform: "Instagram",
+    },
+    {
+      name: "Emily Johnson",
+      username: "emilyjohnson",
+      image: "https://via.placeholder.com/150/00FF00/FFFFFF?Text=EmilyJ",
+      coverImage: "https://via.placeholder.com/350x150/00FF00/FFFFFF?Text=EmilyJCover",
+      bio: "Designer with a passion for sustainability",
+      platform: "Messenger",
+    },
+    {
+      name: "Michael Brown",
+      username: "michaelbrown",
+      image: "https://via.placeholder.com/150/0000FF/FFFFFF?Text=MichaelB",
+      coverImage: "https://via.placeholder.com/350x150/0000FF/FFFFFF?Text=MichaelBCover",
+      bio: "Globetrotter and tech enthusiast",
+      platform: "WhatsApp",
+    },
+    {
+      name: "Sophia Taylor",
+      username: "sophiataylor",
+      image: "https://via.placeholder.com/150/FF00FF/FFFFFF?Text=SophiaT",
+      coverImage: "https://via.placeholder.com/350x150/FF00FF/FFFFFF?Text=SophiaTCover",
+      bio: "Blogger and yoga instructor",
+      platform: "Messenger",
+    },
+    {
+      name: "Olivia Jones",
+      username: "oliviajones",
+      image: "https://via.placeholder.com/150/00FFFF/000000?Text=OliviaJ",
+      coverImage: "https://via.placeholder.com/350x150/00FFFF/000000?Text=OliviaJCover",
+      bio: "Marketer and social media guru",
+      platform: "Instagram",
+    },
+    {
+      name: "William Johnson",
+      username: "williamjohnson",
+      image: "https://via.placeholder.com/150/FFFF00/000000?Text=WilliamJ",
+      coverImage: "https://via.placeholder.com/350x150/FFFF00/000000?Text=WilliamJCover",
+      bio: "Entrepreneur and keynote speaker",
+      platform: "WhatsApp",
+    },
+    {
+      name: "Emma Wilson",
+      username: "emmawilson",
+      image: "https://via.placeholder.com/150/FFFFFF/000000?Text=EmmaW",
+      coverImage: "https://via.placeholder.com/350x150/FFFFFF/000000?Text=EmmaWCover",
+      bio: "Chef and culinary writer",
+      platform: "WhatsApp",
+    }
   ];
-  
+    
   
   export const dummyConversations = {
     "John Doe": [
@@ -74,7 +128,75 @@ export const usersData = [
         date: '09:25 AM',
         content: 'Let’s celebrate when you’re free.'
       },
-      // ... more messages
+    ],
+        // New conversations for additional profiles
+  "David Smith": [
+    {
+      from: 'David Smith',
+      source: 'Instagram',
+      date: 'Yesterday',
+      content: 'Great to connect here!'
+    },
+    {
+      from: 'David Smith',
+      source: 'Instagram',
+      date: 'Yesterday',
+      content: 'Check out my latest post.'
+    },
+  ],
+  "Emily Johnson": [
+    {
+      from: 'Emily Johnson',
+      source: 'Facebook',
+      date: '08:45 AM',
+      content: 'Could we discuss the new design project?'
+    },
+    {
+      from: 'Emily Johnson',
+      source: 'Facebook',
+      date: '09:00 AM',
+      content: 'Sent you the draft designs.'
+    },
+  ],
+  "Michael Brown": [
+    {
+      from: 'Michael Brown',
+      source: 'WhatsApp',
+      date: 'Monday',
+      content: 'Don\'t forget the team call at 3 PM.'
+    },
+  ],
+  "Sophia Taylor": [
+    {
+      from: 'Sophia Taylor',
+      source: 'Messenger',
+      date: 'Yesterday',
+      content: 'Yoga session was refreshing, thanks!'
+    },
+  ],
+  "Olivia Jones": [
+    {
+      from: 'Olivia Jones',
+      source: 'Instagram',
+      date: 'Tuesday',
+      content: 'Loved your photography!'
+    },
+  ],
+  "William Johnson": [
+    {
+      from: 'William Johnson',
+      source: 'LinkedIn',
+      date: '09:30 AM',
+      content: 'Interested in a collaboration?'
+    },
+  ],
+  "Emma Wilson": [
+    {
+      from: 'Emma Wilson',
+      source: 'Twitter',
+      date: '10:20 AM',
+      content: 'New recipe on my blog!'
+    },
     ],
     // ... conversations for other users
   };
