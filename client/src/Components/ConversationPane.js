@@ -47,9 +47,10 @@ const ConversationPane = ({
     }
   };
 
-  const onEmojiClick = (event, emojiObject) => {
-    setReply((prevReply) => prevReply + emojiObject.emoji);
-    setShowEmojiPicker(false);
+  const onEmojiClick = (emojiObject, event) => {
+    console.log(emojiObject); // Log the emoji object to see what properties it has
+    setReply((prevReply) => prevReply + emojiObject.emoji); // This appends the emoji character
+    setShowEmojiPicker(false); // Optionally close the picker after selection
   };
 
   const handleFileChange = (event) => {
@@ -156,7 +157,28 @@ const ConversationPane = ({
           sx={{ mr: 1, borderRadius: "20px" }}
         />
 
-        {showEmojiPicker && <Picker onEmojiClick={onEmojiClick} />}
+        {showEmojiPicker && (
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: "50px", // Adjust according to your layout needs
+              left: "55%",
+              transform: "translateX(-50%)",
+              zIndex: 1000, // Ensure it's above other components
+              width: "auto", // or fixed width
+              maxHeight: "300px", // Limit height and make it scrollable
+              overflowY: "auto",
+              backgroundColor: "background.paper", // Use theme colors
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: "4px",
+              boxShadow: 3,
+            }}
+          >
+            <Picker onEmojiClick={onEmojiClick} />
+          </Box>
+        )}
+
         <IconButton
           color="primary"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}

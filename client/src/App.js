@@ -26,6 +26,7 @@ function App() {
   const [conversation, setConversation] = useState([]);
   const [selectedTab, setSelectedTab] = useState("All"); // Keep track of the selected tab
   const [filteredUsers, setFilteredUsers] = useState(usersData); // Initialize with all users
+  
   // Add state to hold the entire conversation including new messages
   const [allConversations, setAllConversations] = useState(dummyConversations);
   const [selectedUserProfile, setSelectedUserProfile] = useState(usersData[0]);
