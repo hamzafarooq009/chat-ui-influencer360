@@ -1,14 +1,12 @@
-
-
-
-
 export interface User {
-    platformId: String,
+    platformId: string,
     platform: Platform,
-    username?: String,
-    email?: String,
+    username: string,
+    email?: string,
     // profile picture url.
-    profile_picture?: String,
+    profile_picture?: string,
+    lastMessage?: string,  // Last message text
+    lastMessageDate?: string,  // Date of the last message
 }
 
 // Interface to get user contact on the right sidebar.
@@ -39,7 +37,7 @@ export interface GetConversationsResponse {
     conversation : Conversations[]
 }
 
-interface Conversations {
+export interface Conversations {
     message: String
     // Conversation id.
     id: String,
@@ -73,21 +71,25 @@ export interface PostMessageRequest {
 }
 
 
-interface Message {
-    id: String,
-    message: String,
+export interface Message {
+    id: string,
+    message: string,
+    from: string,
+    source: string,
+    date: string,  // Include this if you want to keep the date
     attachment: ConversationAttachment,
     receipient: User,
     reactions: ReactionInfo[],
     createTime: number,
+    
 }
 
-interface ReactionInfo {
+export interface ReactionInfo {
     reaction: String,
     user: User[]
 }
 
-interface CreateMessageRequest {
+export interface CreateMessageRequest {
     message: String,
     attachment: ConversationAttachment,
     receipient: User,
@@ -100,14 +102,14 @@ export interface PostMessageResponse {
     result: Status,
 }
 
-enum Status {
+export enum Status {
     SUCCESS,
     FAILED,
     FAILED_NOT_RETRIABLE,
 }
 
 
-enum Platform {
+export enum Platform {
     INSTAGRAM,
     MESSENGER,
     WHATSAPP,
@@ -116,10 +118,11 @@ enum Platform {
 
 
 export interface ConversationAttachment {
-    type: AttachmentType,
-    playload: any,
+    type: AttachmentType | null;
+    payload: any,
 }
 
 export enum AttachmentType {
-    MEDIA_SHARE
+    MEDIA_SHARE, 
+    NONE // Represents no attachment
 }

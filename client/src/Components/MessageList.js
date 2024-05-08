@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MessageIcon from '@mui/icons-material/Message';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import CommentIcon from '@mui/icons-material/Comment';
 
 const MessageList = ({ users, onSelectUser, selectedUser, selectedTab }) => {
     // Function to get the icon based on the platform

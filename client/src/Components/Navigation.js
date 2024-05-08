@@ -4,7 +4,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
@@ -45,8 +44,7 @@ const Navigation = ({ onChangeTab }) => {
           scrollButtons="auto"
           aria-label="navigation tabs"
           textColor="primary"
-          indicatorColor="primary"
-          
+          indicatorColor="primary" 
         >
           <StyledTab label="All messages" />
           <StyledTab label="Messenger" />
