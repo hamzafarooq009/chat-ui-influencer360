@@ -1,20 +1,33 @@
 // Import necessary React and Material-UI components
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Avatar, List, ListItem, ListItemAvatar, ListItemText, Paper, Typography, IconButton, TextField, Card, CardHeader } from "@mui/material";
+import {
+  Box,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  Typography,
+  IconButton,
+  TextField,
+  Card,
+  CardHeader,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import AttachmentIcon from "@mui/icons-material/Attachment";
-import Picker from "emoji-picker-react";
+import Picker, { EmojiClickData } from "emoji-picker-react"; // Ensure this import is correct
 
 // Import interfaces
-import { Message, User } from '../interfaces';
+import { Message, User } from "../interfaces";
 
 // Define the type for the props expected by ConversationPane
 interface ConversationPaneProps {
   conversation: Message[];
   onSendMessage: (message: string) => void;
   selectedUser: User;
-  onHeaderClick?: () => void;  // Optional prop for handling header clicks
+  onHeaderClick?: () => void; // Optional prop for handling header clicks
 }
 
 const ConversationPanet: React.FC<ConversationPaneProps> = ({
@@ -29,6 +42,11 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+    setReply((prevReply) => prevReply + emojiData.emoji); // Append the selected emoji to the reply
+    setShowEmojiPicker(false); // Optionally close the picker after selection
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,15 +63,11 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
     }
     if (selectedFile) {
       console.log("File to send:", selectedFile);
+      // Implement or call a function to handle file upload here
+      // e.g., uploadFile(selectedFile);
       setSelectedFile(null);
     }
   };
-
-  const onEmojiClick = (emojiObject: any, event: React.MouseEvent) => {
-    console.log(emojiObject); // Log the emoji object to see what properties it has
-    setReply((prevReply) => prevReply + emojiObject.emoji); // This appends the emoji character
-    setShowEmojiPicker(false); // Optionally close the picker after selection
-  };  
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -71,7 +85,12 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
     >
       {selectedUser && (
         <CardHeader
-          avatar={<Avatar aria-label="profile picture" src={selectedUser.profile_picture || ''} />}
+          avatar={
+            <Avatar
+              aria-label="profile picture"
+              src={selectedUser.profile_picture || ""}
+            />
+          }
           title={selectedUser.username}
           subheader={`@${selectedUser.username}`}
           onClick={onHeaderClick}
@@ -176,7 +195,7 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
               boxShadow: 3,
             }}
           >
-            {/* <Picker onEmojiClick={onEmojiClick} /> */}
+            {showEmojiPicker && <Picker onEmojiClick={onEmojiClick} />}
           </Box>
         )}
 
@@ -192,19 +211,18 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
           hidden
           onChange={handleFileChange}
         />
-        {/* <IconButton
+
+        <IconButton
           color="primary"
-          onClick={() => fileInputRef.current.click()}
+          onClick={() => fileInputRef.current?.click()}
         >
           <AttachmentIcon />
-        </IconButton> */}
+        </IconButton>
 
         <IconButton color="primary" onClick={handleSend}>
           <SendIcon />
         </IconButton>
       </Box>
-
-
     </Box>
   );
 };
