@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardHeader, CardMedia, CardContent, Typography, Avatar } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { User } from '../interfaces';  // Correct the path as necessary
+import { User } from '../interfaces';
 
 interface ProfilePreviewProps {
     profile: User;
@@ -21,7 +21,7 @@ const ProfilePreviewt: React.FC<ProfilePreviewProps> = ({ profile }) => {
           avatar={
             <StyledAvatar
               aria-label="profile picture"
-              src={profile.profile_picture || ''}  // Providing a fallback for an undefined profile picture
+              src={profile.profile_picture || ''}
             />
           }
           title={profile.username}

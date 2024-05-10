@@ -17,12 +17,11 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import AttachmentIcon from "@mui/icons-material/Attachment";
-import Picker, { EmojiClickData } from "emoji-picker-react"; // Ensure this import is correct
+import Picker, { EmojiClickData } from "emoji-picker-react";
 
 // Import interfaces
 import { Message, User } from "../interfaces";
 
-// Define the type for the props expected by ConversationPane
 interface ConversationPaneProps {
   conversation: Message[];
   onSendMessage: (message: string) => void;
@@ -38,7 +37,7 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
 }) => {
   const [reply, setReply] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const [chosenEmoji, setChosenEmoji] = useState<any>(null);
+  // const [chosenEmoji, setChosenEmoji] = useState<any>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -98,7 +97,6 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
         />
       )}
 
-      {/* Additional components and logic remain unchanged */}
       <Paper
         elevation={3}
         sx={{
@@ -123,10 +121,10 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
                       p: 2,
                       my: 1,
                       maxWidth: "75%",
-                      bgcolor: msg.from === "You" ? "#e0f7fa" : "#f1f3f4", // Adjust the background color to match your design
+                      bgcolor: msg.from === "You" ? "#e0f7fa" : "#f1f3f4",
                       borderRadius: "20px",
-                      marginLeft: msg.from === "You" ? "auto" : 0, // Align right if it's "You"
-                      position: "relative", // Add position relative for absolute positioning of date
+                      marginLeft: msg.from === "You" ? "auto" : 0,
+                      position: "relative",
                     }}
                   >
                     <Typography
@@ -136,7 +134,7 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
                     >
                       {msg.message}
                     </Typography>
-                    {/* Position the date absolutely within the card at the bottom-right */}
+                    
                     <Typography
                       component="span"
                       variant="caption"
@@ -181,14 +179,14 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
           <Box
             sx={{
               position: "absolute",
-              bottom: "50px", // Adjust according to your layout needs
+              bottom: "50px",
               left: "55%",
               transform: "translateX(-50%)",
-              zIndex: 1000, // Ensure it's above other components
-              width: "auto", // or fixed width
-              maxHeight: "300px", // Limit height and make it scrollable
+              zIndex: 1000,
+              width: "auto",
+              maxHeight: "300px",
               overflowY: "auto",
-              backgroundColor: "background.paper", // Use theme colors
+              backgroundColor: "background.paper",
               border: "1px solid",
               borderColor: "divider",
               borderRadius: "4px",

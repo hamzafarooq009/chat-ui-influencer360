@@ -17,7 +17,7 @@ import ConversationPanet from "./Components/ConversationPanet";
 import ProfilePreviewt from "./Components/ProfilePreviewt";
 
 import { usersData, dummyConversations, users } from "./data";
-import { User, Message, Platform, AttachmentType } from './interfaces'; // Import your interfaces
+import { User, Message, Platform, AttachmentType } from './interfaces';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -34,9 +34,9 @@ function App() {
 
   const tabNames: (Platform | 'All')[] = ["All", Platform.MESSENGER, Platform.INSTAGRAM, Platform.WHATSAPP]
 
-  const toggleProfilePreview = (): void => {
-    setIsProfilePreviewOpen(!isProfilePreviewOpen);
-  };
+  // const toggleProfilePreview = (): void => {
+  //   setIsProfilePreviewOpen(!isProfilePreviewOpen);
+  // };
 
   
   const handleSelectUser = (username: string): void => {
@@ -44,13 +44,13 @@ function App() {
     setSelectedUser(userProfile || usersData[0]);
     const userConversation = dummyConversations[username] || [];
     setConversation(userConversation);
-    setSelectedUserProfile(userProfile || usersData[0]);  // Ensure this is also being updated
+    setSelectedUserProfile(userProfile || usersData[0]);
   };
   
 
-  const handleSearch = (query: string): void => {
-    setSearchQuery(query);
-  };
+  // const handleSearch = (query: string): void => {
+  //   setSearchQuery(query);
+  // };
 
   const handleSelectTab = (tabIndex: number): void => {
     const tab = tabNames[tabIndex];
@@ -63,21 +63,20 @@ function App() {
     }
 };
 
-  const getPlatformEnum = (tabName: string): Platform | undefined => {
-    const mapping: { [key: string]: Platform } = {
-        'Instagram': Platform.INSTAGRAM,
-        'Messenger': Platform.MESSENGER,
-        'WhatsApp': Platform.WHATSAPP
-    };
-    return mapping[tabName];
-};
+//   const getPlatformEnum = (tabName: string): Platform | undefined => {
+//     const mapping: { [key: string]: Platform } = {
+//         'Instagram': Platform.INSTAGRAM,
+//         'Messenger': Platform.MESSENGER,
+//         'WhatsApp': Platform.WHATSAPP
+//     };
+//     return mapping[tabName];
+// };
 
 
   const handleSendMessage = (newMessageContent: string): void => {
     if (!selectedUser) {
-      // Optionally, set to first user as a fallback (though should be initially set)
       setSelectedUser(usersData[0]);
-      return; // Add error handling or logging here if needed
+      return;
     }
 
     const newMessage: Message = {
