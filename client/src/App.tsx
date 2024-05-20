@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ThemeProvider,
   Paper,
@@ -16,123 +16,153 @@ import MessageListt from "./Components/MessageListt";
 import ConversationPanet from "./Components/ConversationPanet";
 import ProfilePreviewt from "./Components/ProfilePreviewt";
 
-import { usersData, dummyConversations, users } from "./data";
-import { User, Message, Platform, AttachmentType } from './interfaces';
+import { users, dummyConversations } from "./data";
+import { User, Message, Platform, AttachmentType, ConversationAttachment } from "./interfaces";
 
-function App() {
+const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedUserName, setSelectedUserName] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [conversation, setConversation] = useState<Message[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>(usersData);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const [allConversations, setAllConversations] = useState<typeof dummyConversations>(dummyConversations);
-  const [selectedUserProfile, setSelectedUserProfile] = useState<User>(usersData[0]);
-  const [isProfilePreviewOpen, setIsProfilePreviewOpen] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<User>(usersData[0]);
-
   const [selectedTab, setSelectedTab] = useState<Platform | 'All'>('All');
+  const [isProfilePreviewOpen, setIsProfilePreviewOpen] = useState<boolean>(false);
 
+  const tabNames: (Platform | 'All')[] = ["All", Platform.MESSENGER, Platform.INSTAGRAM, Platform.WHATSAPP];
 
-  const tabNames: (Platform | 'All')[] = ["All", Platform.MESSENGER, Platform.INSTAGRAM, Platform.WHATSAPP]
+  useEffect(() => {
+    if (selectedUser) {
+      const userConversation = allConversations[selectedUser.username] || [];
+      setConversation(userConversation);
+      console.log('Selected User:', selectedUser.username, 'Conversation:', userConversation);
+    }
+  }, [selectedUser, allConversations]);
 
-  // const toggleProfilePreview = (): void => {
-  //   setIsProfilePreviewOpen(!isProfilePreviewOpen);
-  // };
-
-  
   const handleSelectUser = (username: string): void => {
-    const userProfile = usersData.find((user) => user.username === username);
-    setSelectedUser(userProfile || usersData[0]);
-    const userConversation = dummyConversations[username] || [];
-    setConversation(userConversation);
-    setSelectedUserProfile(userProfile || usersData[0]);
+    const userProfile = users.find((user) => user.username === username);
+    setSelectedUser(userProfile || null);
   };
-  
-
-  // const handleSearch = (query: string): void => {
-  //   setSearchQuery(query);
-  // };
 
   const handleSelectTab = (tabIndex: number): void => {
     const tab = tabNames[tabIndex];
     setSelectedTab(tab);
     if (tab === "All") {
-        setFilteredUsers(usersData);
+      setFilteredUsers(users);
     } else {
-        const newFilteredUsers = usersData.filter((user) => user.platform === tab);
-        setFilteredUsers(newFilteredUsers);
+      const newFilteredUsers = users.filter((user) => user.platform === tab);
+      setFilteredUsers(newFilteredUsers);
     }
-};
+  };
 
-//   const getPlatformEnum = (tabName: string): Platform | undefined => {
-//     const mapping: { [key: string]: Platform } = {
-//         'Instagram': Platform.INSTAGRAM,
-//         'Messenger': Platform.MESSENGER,
-//         'WhatsApp': Platform.WHATSAPP
-//     };
-//     return mapping[tabName];
-// };
-
-
-  const handleSendMessage = (newMessageContent: string): void => {
-    if (!selectedUser) {
-      setSelectedUser(usersData[0]);
-      return;
-    }
+  const handleSendMessage = (message: string, attachment?: ConversationAttachment): void => {
+    if (!selectedUser) return;
 
     const newMessage: Message = {
-      from: "You",  
-      message: newMessageContent,
       id: Math.random().toString(36).substring(7),
+      message: message,
+      from: "You",
+      source: "Direct",
       date: new Date().toISOString(),
-      attachment: { type: AttachmentType.NONE, payload: null },
+      attachment: attachment || { type: AttachmentType.NONE, payload: null },
       receipient: selectedUser,
       reactions: [],
       createTime: Date.now(),
-      source: "Direct",
-  };
+    };
+
+    console.log("New message:", newMessage);
 
     setAllConversations((prevConversations) => ({
       ...prevConversations,
-      [selectedUserName]: [...(prevConversations[selectedUserName] || []), newMessage],
+      [selectedUser.username]: [...(prevConversations[selectedUser.username] || []), newMessage],
     }));
 
     setConversation((prevConversation) => [...prevConversation, newMessage]);
   };
 
+  const toggleProfilePreview = () => {
+    console.log('Profile preview toggled');
+    setIsProfilePreviewOpen(!isProfilePreviewOpen);
+  };
+
+  const handleAddReaction = (messageId: string, emoji: string): void => {
+    setAllConversations((prevConversations) => {
+      const newConversations = { ...prevConversations };
+      const userMessages = newConversations[selectedUser!.username].map((msg) => {
+        if (msg.id === messageId) {
+          const reactionIndex = msg.reactions.findIndex(
+            (reaction) => reaction.reaction === emoji
+          );
+          if (reactionIndex > -1) {
+            msg.reactions[reactionIndex].user.push(selectedUser!);
+          } else {
+            msg.reactions.push({ reaction: emoji, user: [selectedUser!] });
+          }
+        }
+        return msg;
+      });
+      newConversations[selectedUser!.username] = userMessages;
+      return newConversations;
+    });
+
+    setConversation((prevConversation) =>
+      prevConversation.map((msg) =>
+        msg.id === messageId
+          ? {
+              ...msg,
+              reactions: msg.reactions.some((reaction) => reaction.reaction === emoji)
+                ? msg.reactions.map((reaction) =>
+                    reaction.reaction === emoji
+                      ? { ...reaction, user: [...reaction.user, selectedUser!] }
+                      : reaction
+                  )
+                : [...msg.reactions, { reaction: emoji, user: [selectedUser!] }],
+            }
+          : msg
+      )
+    );
+  };
+
+
   return (
-<ThemeProvider theme={theme}>
-  <CssBaseline />
-  <Box>
-    <AppBar position="fixed">
-      <Navigation onChangeTab={handleSelectTab} />
-    </AppBar>
-    <Toolbar />
-    <Grid container spacing={2} sx={{ pt: 8, px: 2, maxWidth: "100%", margin: "0 auto" }}>
-      <Grid item xs={12} md={3}>
-        <Paper elevation={3} sx={{ maxHeight: "calc(100vh - 64px)", overflowY: "auto" }}>
-          <SearchBar onSearch={setSearchQuery} />
-          <MessageListt
-            users={users}
-            onSelectUser={handleSelectUser}
-            selectedUser={selectedUserName}
-            selectedTab={selectedTab}
-          />
-        </Paper>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <ConversationPanet
-          conversation={conversation}
-          onSendMessage={handleSendMessage}
-          selectedUser={selectedUserProfile}
-        />
-      </Grid>
-      <Grid item xs={12} md={3}>
-        <ProfilePreviewt profile={selectedUserProfile} />
-      </Grid>
-    </Grid>
-  </Box>
-</ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box>
+        <AppBar position="fixed">
+          <Navigation onChangeTab={handleSelectTab} />
+        </AppBar>
+        <Toolbar />
+        <Grid container spacing={2} sx={{ pt: 8, px: 2, maxWidth: "100%", margin: "0 auto" }}>
+          <Grid item xs={12} md={3}>
+            <Paper elevation={3} sx={{ maxHeight: "calc(100vh - 140px)", overflowY: "auto" }}>
+              <SearchBar onSearch={setSearchQuery} />
+              <MessageListt
+                users={filteredUsers}
+                onSelectUser={handleSelectUser}
+                selectedUser={selectedUser ? selectedUser.username : ""}
+                selectedTab={selectedTab}
+              />
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={isProfilePreviewOpen ? 6 : 9}>
+            <ConversationPanet
+              conversation={conversation}
+              onSendMessage={handleSendMessage}
+              selectedUser={selectedUser || users[0]}
+              onHeaderClick={toggleProfilePreview}
+              onAddReaction={handleAddReaction} // Pass the handler
+            />
+          </Grid>
+          {isProfilePreviewOpen && selectedUser && (
+            <Grid item xs={12} md={3}>
+              <Paper elevation={3} sx={{ maxHeight: "calc(100vh - 64px)", overflowY: "auto" }}>
+                <ProfilePreviewt profile={selectedUser} />
+              </Paper>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;

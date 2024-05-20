@@ -1,4 +1,3 @@
-// Import necessary React and Material-UI components
 import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
@@ -10,42 +9,38 @@ import {
   Paper,
   Typography,
   IconButton,
-  TextField,
   Card,
   CardHeader,
+  Tooltip,
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import AttachmentIcon from "@mui/icons-material/Attachment";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Picker, { EmojiClickData } from "emoji-picker-react";
 
 // Import interfaces
-import { Message, User } from "../interfaces";
+import { Message, User, AttachmentType, ConversationAttachment } from "../interfaces";
+import MessageBox from "./MessageBox";
 
-interface ConversationPaneProps {
+interface ConversationPanetProps {
   conversation: Message[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, attachment?: ConversationAttachment) => void;
   selectedUser: User;
   onHeaderClick?: () => void; // Optional prop for handling header clicks
+  onAddReaction: (messageId: string, emoji: string) => void; // New prop for adding reactions
 }
 
-const ConversationPanet: React.FC<ConversationPaneProps> = ({
+const ConversationPanet: React.FC<ConversationPanetProps> = ({
   conversation,
   onSendMessage,
   selectedUser,
   onHeaderClick,
+  onAddReaction,
 }) => {
-  const [reply, setReply] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  // const [chosenEmoji, setChosenEmoji] = useState<any>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
-    setReply((prevReply) => prevReply + emojiData.emoji); // Append the selected emoji to the reply
-    setShowEmojiPicker(false); // Optionally close the picker after selection
-  };
+  const [pickerPosition, setPickerPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [emojiPickerSide, setEmojiPickerSide] = useState<'left' | 'right'>('right');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,25 +50,52 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
     scrollToBottom();
   }, [conversation]);
 
-  const handleSend = () => {
-    if (reply.trim()) {
-      onSendMessage(reply);
-      setReply("");
-    }
-    if (selectedFile) {
-      console.log("File to send:", selectedFile);
-      // Implement or call a function to handle file upload here
-      // e.g., uploadFile(selectedFile);
-      setSelectedFile(null);
+  const handleEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+    if (selectedMessageId) {
+      onAddReaction(selectedMessageId, emojiData.emoji);
+      setShowEmojiPicker(false);
+      setSelectedMessageId(null);
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-    }
+  const handleShowEmojiPicker = (event: React.MouseEvent<HTMLButtonElement>, messageId: string, side: 'left' | 'right') => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPickerPosition({ top: rect.top + window.scrollY, left: rect.left + window.scrollX });
+    setSelectedMessageId(messageId);
+    setEmojiPickerSide(side);
+    setShowEmojiPicker(true);
   };
 
+  const renderAttachment = (attachment: ConversationAttachment) => {
+    if (!attachment.payload) {
+      return null;
+    }
+  
+    console.log("Rendering attachment:", attachment);
+  
+    const fileExtension = attachment.payload.split('.').pop()?.toLowerCase();
+    
+    // Handle image attachments
+    if (attachment.type === AttachmentType.MEDIA_SHARE) {
+      return <img src={attachment.payload} alt="attachment" style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '8px' }} />;
+    } 
+    // Handle non-image attachments
+    else if (attachment.type === AttachmentType.NON_MEDIA_FILE) {
+      const fileName = attachment.payload.split('/').pop() || "file";
+      return (
+        <a href={attachment.payload} download={fileName} target="_blank" rel="noopener noreferrer">
+          <IconButton color="primary">
+            <AttachFileIcon />
+            <Typography variant="caption" component="span" ml={1}>
+              {fileName}
+            </Typography>
+          </IconButton>
+        </a>
+      );
+    }
+    return null;
+  };
+  
   return (
     <Box
       sx={{
@@ -108,7 +130,7 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
       >
         <List sx={{ paddingBottom: "60px" }}>
           {conversation.map((msg, index) => (
-            <ListItem key={index} alignItems="flex-start">
+            <ListItem key={index} alignItems="flex-start" sx={{ position: "relative" }}>
               {msg.from !== "You" && (
                 <ListItemAvatar>
                   <Avatar alt={msg.from} src={selectedUser.profile_picture} />
@@ -116,38 +138,65 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
               )}
               <ListItemText
                 primary={
-                  <Card
-                    sx={{
-                      p: 2,
-                      my: 1,
-                      maxWidth: "75%",
-                      bgcolor: msg.from === "You" ? "#e0f7fa" : "#f1f3f4",
-                      borderRadius: "20px",
-                      marginLeft: msg.from === "You" ? "auto" : 0,
-                      position: "relative",
-                    }}
+                  <Tooltip
+                    title={new Date(msg.date).toLocaleString()}
+                    arrow
+                    placement={msg.from === "You" ? "top-end" : "top-start"}
                   >
-                    <Typography
-                      component="span"
-                      variant="body1"
-                      display="block"
-                    >
-                      {msg.message}
-                    </Typography>
-                    
-                    <Typography
-                      component="span"
-                      variant="caption"
+                    <Box
                       sx={{
-                        position: "absolute",
-                        bottom: 8,
-                        right: 16,
-                        color: "text.secondary",
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        justifyContent: msg.from === "You" ? "flex-end" : "flex-start",
                       }}
                     >
-                      {msg.date}
-                    </Typography>
-                  </Card>
+                      <Card
+                        sx={{
+                          p: 2,
+                          my: 1,
+                          maxWidth: "75%",
+                          bgcolor: msg.from === "You" ? "#e0f7fa" : "#f1f3f4",
+                          borderRadius: "20px",
+                          marginLeft: msg.from === "You" ? "auto" : 0,
+                          position: "relative",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Typography component="span" variant="body1" display="block">
+                          {msg.message}
+                        </Typography>
+
+                        {msg.attachment && msg.attachment.type !== null && renderAttachment(msg.attachment)}
+
+                        <Box display="flex" mt={1}>
+                          {msg.reactions.map((reaction, idx) => (
+                            <Typography key={idx} component="span" variant="body2" mr={1}>
+                              {reaction.reaction} ({reaction.user.length})
+                            </Typography>
+                          ))}
+                        </Box>
+                      </Card>
+                      <IconButton
+                        className="hover-visible"
+                        color="primary"
+                        onClick={(e) => handleShowEmojiPicker(e, msg.id, msg.from === "You" ? 'left' : 'right')}
+                        sx={{
+                          marginLeft: 1,
+                          visibility: "hidden",
+                          "&:hover": {
+                            visibility: "visible",
+                          },
+                          "&.hover-visible": {
+                            visibility: "visible",
+                          },
+                        }}
+                      >
+                        <EmojiEmotionsIcon />
+                      </IconButton>
+                    </Box>
+                  </Tooltip>
                 }
               />
             </ListItem>
@@ -157,70 +206,28 @@ const ConversationPanet: React.FC<ConversationPaneProps> = ({
         </List>
       </Paper>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          borderTop: "1px solid #ccc",
-          padding: 2,
-        }}
-      >
-        <TextField
-          fullWidth
-          value={reply}
-          onChange={(e) => setReply(e.target.value)}
-          placeholder="Type your reply..."
-          variant="outlined"
-          size="small"
-          sx={{ mr: 1, borderRadius: "20px" }}
-        />
-
-        {showEmojiPicker && (
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: "50px",
-              left: "55%",
-              transform: "translateX(-50%)",
-              zIndex: 1000,
-              width: "auto",
-              maxHeight: "300px",
-              overflowY: "auto",
-              backgroundColor: "background.paper",
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "4px",
-              boxShadow: 3,
-            }}
-          >
-            {showEmojiPicker && <Picker onEmojiClick={onEmojiClick} />}
-          </Box>
-        )}
-
-        <IconButton
-          color="primary"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      {showEmojiPicker && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: pickerPosition.top,
+            left: emojiPickerSide === 'right' ? pickerPosition.left : pickerPosition.left - 250, // Adjust 250px based on picker width
+            zIndex: 1000,
+            width: "auto",
+            maxHeight: "300px",
+            overflowY: "auto",
+            backgroundColor: "background.paper",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: "4px",
+            boxShadow: 3,
+          }}
         >
-          <EmojiEmotionsIcon />
-        </IconButton>
-        <input
-          ref={fileInputRef}
-          type="file"
-          hidden
-          onChange={handleFileChange}
-        />
+          <Picker onEmojiClick={handleEmojiClick} />
+        </Box>
+      )}
 
-        <IconButton
-          color="primary"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <AttachmentIcon />
-        </IconButton>
-
-        <IconButton color="primary" onClick={handleSend}>
-          <SendIcon />
-        </IconButton>
-      </Box>
+      <MessageBox onSendMessage={onSendMessage} />
     </Box>
   );
 };

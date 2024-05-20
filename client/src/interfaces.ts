@@ -123,6 +123,7 @@ export interface ConversationAttachment {
 }
 
 export enum AttachmentType {
-    MEDIA_SHARE, 
+    MEDIA_SHARE,
+    NON_MEDIA_FILE,
     NONE // Represents no attachment
-}
+  }  

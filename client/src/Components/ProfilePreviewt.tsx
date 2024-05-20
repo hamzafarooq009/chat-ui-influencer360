@@ -1,4 +1,3 @@
-// Assuming User interface and styled are correctly imported
 import React from 'react';
 import { Card, CardHeader, CardMedia, CardContent, Typography, Avatar } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -35,7 +34,7 @@ const ProfilePreviewt: React.FC<ProfilePreviewProps> = ({ profile }) => {
           height="194"
           image={profile.profile_picture || ''}  // Fallback here as well
           alt={`${profile.username}'s cover`}
-          sx={{ width: 'auto', maxHeight: '194px', objectFit: 'cover' }}
+          sx={{ width: '100%', height: 'auto', objectFit: 'cover' }}
         />
         <CardContent sx={{ padding: '16px' }}>
           <Typography variant="body2" color="text.secondary">
