@@ -5,7 +5,7 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import Picker, { EmojiClickData } from "emoji-picker-react";
 import { AttachmentType, ConversationAttachment } from "../interfaces";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 interface MessageBoxProps {
   onSendMessage: (message: string, attachment?: ConversationAttachment) => void;
@@ -21,7 +21,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
     if (reply.trim() || selectedFile) {
       const fileExtension = selectedFile?.name.split('.').pop()?.toLowerCase();
       const isImage = ["jpg", "jpeg", "png", "svg"].includes(fileExtension || "");
-      console.log("is image: ", isImage)
   
       const attachment: ConversationAttachment | undefined = selectedFile
         ? {
@@ -29,9 +28,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
             payload: URL.createObjectURL(selectedFile),
           }
         : undefined;
-  
-      console.log("Message to send:", reply);
-      console.log("Attachment to send:", attachment);
   
       onSendMessage(reply, attachment);
       setReply("");
@@ -42,11 +38,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      const isValidSize = file.size <= 25 * 1024 * 1024; // 25 MB
+      const isValidSize = file.size <= 25 * 1024 * 1024;
   
       if (isValidSize) {
         setSelectedFile(file);
-        console.log("Selected file: ", file);
       } else {
         alert("File size should be less than or equal to 25 MB.");
       }
@@ -59,8 +54,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent new line on Enter
+    if (event.key === "Enter") {
+      event.preventDefault();
       handleSend();
     }
   };
@@ -75,8 +70,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
       }}
     >
       {selectedFile && (
-        <Card sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-          <CardContent sx={{ flex: '1 0 auto' }}>
+        <Card sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+          <CardContent sx={{ flex: "1 0 auto" }}>
             <Typography variant="body1" component="div">
               {selectedFile.name}
             </Typography>
@@ -125,23 +120,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
           </Box>
         )}
 
-        <IconButton
-          color="primary"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        >
+        <IconButton color="primary" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
           <EmojiEmotionsIcon />
         </IconButton>
-        <input
-          ref={fileInputRef}
-          type="file"
-          hidden
-          onChange={handleFileChange}
-        />
+        <input ref={fileInputRef} type="file" hidden onChange={handleFileChange} />
 
-        <IconButton
-          color="primary"
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <IconButton color="primary" onClick={() => fileInputRef.current?.click()}>
           <AttachmentIcon />
         </IconButton>
 

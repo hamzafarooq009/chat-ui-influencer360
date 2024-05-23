@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import List from '@mui/material/List';
+import { List, Badge } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
@@ -11,6 +11,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { User, Platform } from '../interfaces'; // Ensure correct path
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 
 interface MessageListProps {
   users: User[];
@@ -18,6 +19,20 @@ interface MessageListProps {
   selectedUser: string;
   selectedTab: Platform | 'All';
 }
+
+const StyledAvatar = styled(Avatar)({
+  position: 'relative',
+});
+
+const IconOverlay = styled('div')({
+  position: 'absolute',
+  bottom: 0,
+  right: 0,
+  borderRadius: '50%',
+  backgroundColor: 'white',
+  padding: '2px',
+  transform: 'translate(20%, 20%)',
+});
 
 const MessageListt: React.FC<MessageListProps> = ({
   users,
@@ -60,11 +75,11 @@ const MessageListt: React.FC<MessageListProps> = ({
   const getPlatformIcon = (platform: Platform) => {
     switch (platform) {
       case Platform.INSTAGRAM:
-        return <InstagramIcon />;
+        return <InstagramIcon style={{ color: '#E1306C' }} />;
       case Platform.MESSENGER:
-        return <MessageIcon />;
+        return <MessageIcon style={{ color: '#0078FF' }} />;
       case Platform.WHATSAPP:
-        return <WhatsAppIcon />;
+        return <WhatsAppIcon style={{ color: '#25D366' }} />;
       default:
         return null;
     }
@@ -77,10 +92,11 @@ const MessageListt: React.FC<MessageListProps> = ({
     return message;
   };
 
-  
-  useEffect(() => {
-    console.log('paginatedUsers Users:', paginatedUsers);
-  }, [paginatedUsers]);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options = { month: 'short', day: 'numeric' } as const;
+    return date.toLocaleDateString('en-US', options);
+  };
 
   return (
     <Box
@@ -98,9 +114,21 @@ const MessageListt: React.FC<MessageListProps> = ({
             button
             selected={selectedUser === user.username}
             onClick={() => onSelectUser(user.username)}
+            sx={{
+              bgcolor: selectedUser === user.username ? '#f1f3f4' : 'transparent',
+              '&:hover': {
+                bgcolor: '#f1f3f4',
+              },
+            }}
           >
             <ListItemAvatar>
-              <Avatar alt={user.username} src={user.profile_picture} />
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                badgeContent={getPlatformIcon(user.platform)}
+              >
+                <Avatar alt={user.username} src={user.profile_picture} />
+              </Badge>
             </ListItemAvatar>
             <ListItemText
               primary={
@@ -108,14 +136,16 @@ const MessageListt: React.FC<MessageListProps> = ({
                   <Typography
                     sx={{ display: 'inline' }}
                     component="span"
-                    variant="body2"
+                    variant="body1"
                     color="text.primary"
                     noWrap
-                    style={{ fontWeight: 'bold' }}
+                    style={{
+                      fontWeight: selectedUser === user.username ? 'normal' : 'bold',
+                      fontSize: '14px',
+                    }}
                   >
                     {user.username}
                   </Typography>
-                  {getPlatformIcon(user.platform)}
                 </Box>
               }
               secondary={
@@ -125,20 +155,25 @@ const MessageListt: React.FC<MessageListProps> = ({
                     component="span"
                     variant="body2"
                     color="text.primary"
+                    style={{
+                      fontWeight: selectedUser === user.username ? 'normal' : 'bold',
+                      fontSize: '12px',
+                    }}
                   >
                     {truncateMessage(user.lastMessage || 'No recent messages', 30)}
-                  </Typography>
-                  <Typography
-                    sx={{ display: 'inline', float: 'right' }}
-                    component="span"
-                    variant="body2"
-                    color="text.secondary"
-                  >
-                    {user.lastMessageDate}
                   </Typography>
                 </>
               }
             />
+            <Typography
+              sx={{ display: 'inline', float: 'right', marginLeft: 'auto' }}
+              component="span"
+              variant="body2"
+              color="text.secondary"
+              style={{ fontSize: '12px' }}
+            >
+              {formatDate(user.lastMessageDate || '')}
+            </Typography>
           </ListItem>
         ))}
         {loading && (

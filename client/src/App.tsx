@@ -7,6 +7,7 @@ import {
   AppBar,
   Toolbar,
   Box,
+  Typography,
 } from "@mui/material";
 import theme from "./theme";
 
@@ -122,16 +123,29 @@ const App: React.FC = () => {
     );
   };
 
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box>
-        <AppBar position="fixed">
-          <Navigation onChangeTab={handleSelectTab} />
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #e3f2fd 30%, #ffebee 90%)',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1, backgroundColor: 'transparent', boxShadow: 'none' }}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 'bold' }}>
+              Inbox
+            </Typography>
+          </Toolbar>
         </AppBar>
-        <Toolbar />
-        <Grid container spacing={2} sx={{ pt: 8, px: 2, maxWidth: "100%", margin: "0 auto" }}>
+        
+        <Grid container spacing={2} sx={{ pt: 8, px: 2, maxWidth: "100%", margin: "0 auto", flexGrow: 1 }}>
+          <Grid item xs={12} md={12}>
+            <Navigation onChangeTab={handleSelectTab} />
+          </Grid>
           <Grid item xs={12} md={3}>
             <Paper elevation={3} sx={{ maxHeight: "calc(100vh - 140px)", overflowY: "auto" }}>
               <SearchBar onSearch={setSearchQuery} />
@@ -143,13 +157,13 @@ const App: React.FC = () => {
               />
             </Paper>
           </Grid>
-          <Grid item xs={12} md={isProfilePreviewOpen ? 6 : 9}>
+          <Grid item xs={10} md={isProfilePreviewOpen ? 6 : 9}>
             <ConversationPanet
               conversation={conversation}
               onSendMessage={handleSendMessage}
               selectedUser={selectedUser || users[0]}
               onHeaderClick={toggleProfilePreview}
-              onAddReaction={handleAddReaction} // Pass the handler
+              onAddReaction={handleAddReaction}
             />
           </Grid>
           {isProfilePreviewOpen && selectedUser && (

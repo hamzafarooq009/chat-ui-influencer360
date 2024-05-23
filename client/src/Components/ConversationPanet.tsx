@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Picker, { EmojiClickData } from "emoji-picker-react";
 
 // Import interfaces
@@ -95,13 +95,14 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
     }
     return null;
   };
-  
+
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "calc(90vh - 64px)",
+        height: "calc(100vh - 130px)",
+        overflowY: "auto", // Ensure scrolling for the conversation pane
       }}
     >
       {selectedUser && (
@@ -126,9 +127,12 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
           overflowY: "auto",
           mb: 2,
           backgroundColor: "#FFFFFF",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
         }}
       >
-        <List sx={{ paddingBottom: "60px" }}>
+        <List sx={{ flexGrow: 1, paddingBottom: "60px", overflowY: "auto" }}>
           {conversation.map((msg, index) => (
             <ListItem key={index} alignItems="flex-start" sx={{ position: "relative" }}>
               {msg.from !== "You" && (
@@ -201,9 +205,9 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
               />
             </ListItem>
           ))}
-
           <div ref={messagesEndRef} />
         </List>
+        <MessageBox onSendMessage={onSendMessage} /> {/* Fixed MessageBox at the bottom */}
       </Paper>
 
       {showEmojiPicker && (
@@ -226,8 +230,6 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
           <Picker onEmojiClick={handleEmojiClick} />
         </Box>
       )}
-
-      <MessageBox onSendMessage={onSendMessage} />
     </Box>
   );
 };
