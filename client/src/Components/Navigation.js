@@ -47,14 +47,13 @@ const Navigation = ({ onChangeTab }) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    onChangeTab(newValue); // Pass this new value back to App.js
+    onChangeTab(newValue);
   };
 
   return (
     <AppBar position="static" color="default" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
       <Toolbar>
-        
-        <Box >
+        <Box>
           <StyledTabs
             value={value}
             onChange={handleChange}

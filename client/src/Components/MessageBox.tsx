@@ -1,21 +1,36 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box, TextField, IconButton, Typography, Card, CardContent } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import Picker, { EmojiClickData } from "emoji-picker-react";
-import { AttachmentType, ConversationAttachment } from "../interfaces";
+import { AttachmentType, ConversationAttachment, User } from "../interfaces";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 interface MessageBoxProps {
   onSendMessage: (message: string, attachment?: ConversationAttachment) => void;
+  draftReplies: { [key: string]: string };
+  setDraftReplies: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  selectedUser: User;
 }
 
-const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
-  const [reply, setReply] = useState<string>("");
+const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage, draftReplies, setDraftReplies, selectedUser }) => {
+  const [reply, setReply] = useState<string>(draftReplies[selectedUser.username] || "");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setReply(draftReplies[selectedUser.username] || "");
+  }, [selectedUser, draftReplies]);
+
+  const handleReplyChange = (newReply: string) => {
+    setReply(newReply);
+    setDraftReplies((prevDrafts) => ({
+      ...prevDrafts,
+      [selectedUser.username]: newReply,
+    }));
+  };
 
   const handleSend = () => {
     if (reply.trim() || selectedFile) {
@@ -49,7 +64,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
   };
 
   const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
-    setReply((prevReply) => prevReply + emojiData.emoji);
+    handleReplyChange(reply + emojiData.emoji);
     setShowEmojiPicker(false);
   };
 
@@ -90,7 +105,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ onSendMessage }) => {
         <TextField
           fullWidth
           value={reply}
-          onChange={(e) => setReply(e.target.value)}
+          onChange={(e) => handleReplyChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your reply..."
           variant="outlined"

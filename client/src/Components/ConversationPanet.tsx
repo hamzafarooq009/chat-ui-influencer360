@@ -25,8 +25,10 @@ interface ConversationPanetProps {
   conversation: Message[];
   onSendMessage: (message: string, attachment?: ConversationAttachment) => void;
   selectedUser: User;
-  onHeaderClick?: () => void; // Optional prop for handling header clicks
-  onAddReaction: (messageId: string, emoji: string) => void; // New prop for adding reactions
+  onHeaderClick?: () => void;
+  onAddReaction: (messageId: string, emoji: string) => void;
+  draftReplies: { [key: string]: string };
+  setDraftReplies: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
 }
 
 const ConversationPanet: React.FC<ConversationPanetProps> = ({
@@ -35,6 +37,8 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
   selectedUser,
   onHeaderClick,
   onAddReaction,
+  draftReplies,
+  setDraftReplies,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -70,20 +74,20 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
     if (!attachment.payload) {
       return null;
     }
-  
+
     console.log("Rendering attachment:", attachment);
-  
+
     const fileExtension = attachment.payload.split('.').pop()?.toLowerCase();
-    
+
     // Handle image attachments
     if (attachment.type === AttachmentType.MEDIA_SHARE) {
       return <img src={attachment.payload} alt="attachment" style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '8px' }} />;
-    } 
+    }
     // Handle non-image attachments
     else if (attachment.type === AttachmentType.NON_MEDIA_FILE) {
       const fileName = attachment.payload.split('/').pop() || "file";
       return (
-        <a href={attachment.payload} download={fileName} target="_blank" rel="noopener noreferrer">
+        <a href={attachment.payload} download={fileName} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'white' }}>
           <IconButton color="primary">
             <AttachFileIcon />
             <Typography variant="caption" component="span" ml={1}>
@@ -102,7 +106,7 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
         display: "flex",
         flexDirection: "column",
         height: "calc(100vh - 130px)",
-        overflowY: "auto", // Ensure scrolling for the conversation pane
+        overflowY: "auto",
       }}
     >
       {selectedUser && (
@@ -161,14 +165,24 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
                           p: 2,
                           my: 1,
                           maxWidth: "75%",
-                          bgcolor: msg.from === "You" ? "#e0f7fa" : "#f1f3f4",
+                          bgcolor: msg.from === "You" ? "#A020F0" : "#f1f3f4",
+                          color: msg.from === "You" ? "#ffffff" : "#000000",
                           borderRadius: "20px",
                           marginLeft: msg.from === "You" ? "auto" : 0,
                           position: "relative",
                           cursor: "pointer",
                         }}
                       >
-                        <Typography component="span" variant="body1" display="block">
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          display="block"
+                          sx={{
+                            fontSize: "14px",
+                            fontWeight: msg.from === "You" ? "normal" : "normal",
+                            color: msg.from === "You" ? "#ffffff" : "#000000",
+                          }}
+                        >
                           {msg.message}
                         </Typography>
 
@@ -185,6 +199,7 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
                       <IconButton
                         className="hover-visible"
                         color="primary"
+                        
                         onClick={(e) => handleShowEmojiPicker(e, msg.id, msg.from === "You" ? 'left' : 'right')}
                         sx={{
                           marginLeft: 1,
@@ -207,7 +222,13 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
           ))}
           <div ref={messagesEndRef} />
         </List>
-        <MessageBox onSendMessage={onSendMessage} /> {/* Fixed MessageBox at the bottom */}
+
+        <MessageBox
+          onSendMessage={onSendMessage}
+          draftReplies={draftReplies}
+          setDraftReplies={setDraftReplies}
+          selectedUser={selectedUser}
+        /> {/* Fixed MessageBox at the bottom */}
       </Paper>
 
       {showEmojiPicker && (
@@ -215,7 +236,7 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
           sx={{
             position: "absolute",
             top: pickerPosition.top,
-            left: emojiPickerSide === 'right' ? pickerPosition.left : pickerPosition.left - 250, // Adjust 250px based on picker width
+            left: emojiPickerSide === 'right' ? pickerPosition.left : pickerPosition.left - 250,
             zIndex: 1000,
             width: "auto",
             maxHeight: "300px",

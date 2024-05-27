@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MessageIcon from '@mui/icons-material/Message';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import { User, Platform } from '../interfaces'; // Ensure correct path
+import { User, Platform } from '../interfaces';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
@@ -18,6 +18,7 @@ interface MessageListProps {
   onSelectUser: (username: string) => void;
   selectedUser: string;
   selectedTab: Platform | 'All';
+  readConversations: Set<string>;
 }
 
 const StyledAvatar = styled(Avatar)({
@@ -39,12 +40,13 @@ const MessageListt: React.FC<MessageListProps> = ({
   onSelectUser,
   selectedUser,
   selectedTab,
+  readConversations,
 }) => {
   const [page, setPage] = useState<number>(1);
   const [paginatedUsers, setPaginatedUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const USERS_PER_PAGE = 10;
+  const USERS_PER_PAGE = 14;
 
   useEffect(() => {
     loadMoreUsers();
@@ -127,7 +129,7 @@ const MessageListt: React.FC<MessageListProps> = ({
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 badgeContent={getPlatformIcon(user.platform)}
               >
-                <Avatar alt={user.username} src={user.profile_picture} />
+                <StyledAvatar alt={user.username} src={user.profile_picture} />
               </Badge>
             </ListItemAvatar>
             <ListItemText
@@ -140,7 +142,7 @@ const MessageListt: React.FC<MessageListProps> = ({
                     color="text.primary"
                     noWrap
                     style={{
-                      fontWeight: selectedUser === user.username ? 'normal' : 'bold',
+                      fontWeight: readConversations.has(user.username) ? 'normal' : 'bold',
                       fontSize: '14px',
                     }}
                   >
@@ -156,7 +158,7 @@ const MessageListt: React.FC<MessageListProps> = ({
                     variant="body2"
                     color="text.primary"
                     style={{
-                      fontWeight: selectedUser === user.username ? 'normal' : 'bold',
+                      fontWeight: readConversations.has(user.username) ? 'normal' : 'bold',
                       fontSize: '12px',
                     }}
                   >

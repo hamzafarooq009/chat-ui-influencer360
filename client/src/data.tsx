@@ -8,6 +8,9 @@ export const usersData: User[] = [
     username: "johndoe",
     email: "john.doe@example.com",
     profile_picture: "https://via.placeholder.com/150/0000FF/808080?Text=JohnDoe",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    location: "New York, USA",
+    follower_count: 1200,
   },
   {
     platformId: "whatsapp_hamzafarooq",
@@ -15,6 +18,9 @@ export const usersData: User[] = [
     username: "hamzafarooq",
     email: "hamza.farooq@example.com",
     profile_picture: "https://via.placeholder.com/150/FF0000/FFFFFF?Text=HamzaF",
+    bio: "Vivamus lacinia odio vitae vestibulum vestibulum.",
+    location: "Lahore, Pakistan",
+    follower_count: 800,
   },
   {
     platformId: "messenger_alicejohnson",
@@ -22,6 +28,9 @@ export const usersData: User[] = [
     username: "alicejohnson",
     email: "alice.johnson@example.com",
     profile_picture: "https://via.placeholder.com/150/FFFF00/000000?Text=AliceJ",
+    bio: "Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.",
+    location: "London, UK",
+    follower_count: 950,
   },
   {
     platformId: "instagram_janedoe",
@@ -29,6 +38,9 @@ export const usersData: User[] = [
     username: "janedoe",
     email: "jane.doe@example.com",
     profile_picture: "https://via.placeholder.com/150/00FF00/808080?Text=JaneDoe",
+    bio: "Sed porttitor lectus nibh.",
+    location: "Paris, France",
+    follower_count: 1100,
   },
   {
     platformId: "whatsapp_tomhanks",
@@ -36,6 +48,9 @@ export const usersData: User[] = [
     username: "tomhanks",
     email: "tom.hanks@example.com",
     profile_picture: "https://via.placeholder.com/150/FF00FF/FFFFFF?Text=TomH",
+    bio: "Donec sollicitudin molestie malesuada.",
+    location: "Los Angeles, USA",
+    follower_count: 2000,
   },
   {
     platformId: "messenger_emilyblunt",
@@ -43,6 +58,9 @@ export const usersData: User[] = [
     username: "emilyblunt",
     email: "emily.blunt@example.com",
     profile_picture: "https://via.placeholder.com/150/00FFFF/000000?Text=EmilyB",
+    bio: "Vivamus suscipit tortor eget felis porttitor volutpat.",
+    location: "Toronto, Canada",
+    follower_count: 750,
   },
   {
     platformId: "instagram_sarahconnor",
@@ -50,6 +68,9 @@ export const usersData: User[] = [
     username: "sarahconnor",
     email: "sarah.connor@example.com",
     profile_picture: "https://via.placeholder.com/150/FF4500/808080?Text=SarahC",
+    bio: "Pellentesque in ipsum id orci porta dapibus.",
+    location: "Sydney, Australia",
+    follower_count: 1300,
   },
   {
     platformId: "whatsapp_peterparker",
@@ -57,6 +78,9 @@ export const usersData: User[] = [
     username: "peterparker",
     email: "peter.parker@example.com",
     profile_picture: "https://via.placeholder.com/150/FFD700/FFFFFF?Text=PeterP",
+    bio: "Nulla porttitor accumsan tincidunt.",
+    location: "Queens, USA",
+    follower_count: 1700,
   },
   {
     platformId: "messenger_brucelane",
@@ -64,6 +88,9 @@ export const usersData: User[] = [
     username: "brucelane",
     email: "bruce.lane@example.com",
     profile_picture: "https://via.placeholder.com/150/4B0082/FFFFFF?Text=BruceL",
+    bio: "Curabitur aliquet quam id dui posuere blandit.",
+    location: "Gotham, USA",
+    follower_count: 850,
   },
   {
     platformId: "instagram_annaquinn",
@@ -71,6 +98,9 @@ export const usersData: User[] = [
     username: "annaquinn",
     email: "anna.quinn@example.com",
     profile_picture: "https://via.placeholder.com/150/FF69B4/808080?Text=AnnaQ",
+    bio: "Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.",
+    location: "Dublin, Ireland",
+    follower_count: 950,
   },
   {
     platformId: "whatsapp_steverogers",
@@ -78,6 +108,9 @@ export const usersData: User[] = [
     username: "steverogers",
     email: "steve.rogers@example.com",
     profile_picture: "https://via.placeholder.com/150/00FA9A/FFFFFF?Text=SteveR",
+    bio: "Vestibulum ac diam sit amet quam vehicula elementum.",
+    location: "Brooklyn, USA",
+    follower_count: 1250,
   },
   {
     platformId: "messenger_clarkkent",
@@ -85,6 +118,9 @@ export const usersData: User[] = [
     username: "clarkkent",
     email: "clark.kent@example.com",
     profile_picture: "https://via.placeholder.com/150/FFA07A/FFFFFF?Text=ClarkK",
+    bio: "Pellentesque in ipsum id orci porta dapibus.",
+    location: "Metropolis, USA",
+    follower_count: 900,
   },
   {
     platformId: "instagram_brucewayne",
@@ -92,6 +128,9 @@ export const usersData: User[] = [
     username: "brucewayne",
     email: "bruce.wayne@example.com",
     profile_picture: "https://via.placeholder.com/150/20B2AA/808080?Text=BruceW",
+    bio: "Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.",
+    location: "Gotham, USA",
+    follower_count: 2200,
   },
   {
     platformId: "whatsapp_dianaprince",
@@ -99,6 +138,9 @@ export const usersData: User[] = [
     username: "dianaprince",
     email: "diana.prince@example.com",
     profile_picture: "https://via.placeholder.com/150/FF1493/FFFFFF?Text=DianaP",
+    bio: "Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus.",
+    location: "Themyscira",
+    follower_count: 1500,
   },
   {
     platformId: "messenger_loganwolverine",
@@ -106,6 +148,9 @@ export const usersData: User[] = [
     username: "loganwolverine",
     email: "logan.wolverine@example.com",
     profile_picture: "https://via.placeholder.com/150/00CED1/FFFFFF?Text=LoganW",
+    bio: "Praesent sapien massa, convallis a pellentesque nec, egestas non nisi.",
+    location: "Alberta, Canada",
+    follower_count: 1750,
   },
 ];
 

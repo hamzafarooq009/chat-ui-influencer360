@@ -1,18 +1,22 @@
 export interface User {
-    platformId: string,
-    platform: Platform,
-    username: string,
-    email?: string,
-    // profile picture url.
-    profile_picture?: string,
-    lastMessage?: string,  // Last message text
-    lastMessageDate?: string,  // Date of the last message
-}
+    platformId: string;
+    platform: Platform;
+    username: string;
+    email?: string;
+    profile_picture?: string;
+    lastMessage?: string;
+    lastMessageDate?: string;
+    // Additional details
+    bio?: string;
+    location?: string;
+    follower_count?: number;
+  }  
 
 // Interface to get user contact on the right sidebar.
 export interface GetContactRequest {
     user: User
 }
+
 // Interface for the user contact response on the right sidebar.
 export interface GetContactResponse {
     user: User,

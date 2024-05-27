@@ -28,6 +28,8 @@ const App: React.FC = () => {
   const [allConversations, setAllConversations] = useState<typeof dummyConversations>(dummyConversations);
   const [selectedTab, setSelectedTab] = useState<Platform | 'All'>('All');
   const [isProfilePreviewOpen, setIsProfilePreviewOpen] = useState<boolean>(false);
+  const [draftReplies, setDraftReplies] = useState<{ [key: string]: string }>({});
+  const [readConversations, setReadConversations] = useState<Set<string>>(new Set());
 
   const tabNames: (Platform | 'All')[] = ["All", Platform.MESSENGER, Platform.INSTAGRAM, Platform.WHATSAPP];
 
@@ -36,23 +38,45 @@ const App: React.FC = () => {
       const userConversation = allConversations[selectedUser.username] || [];
       setConversation(userConversation);
       console.log('Selected User:', selectedUser.username, 'Conversation:', userConversation);
+
+      // Mark the conversation as read
+      setReadConversations(prevReadConversations => {
+        const updatedReadConversations = new Set(prevReadConversations);
+        updatedReadConversations.add(selectedUser.username);
+        return updatedReadConversations;
+      });
     }
   }, [selectedUser, allConversations]);
+
+  useEffect(() => {
+    if (filteredUsers.length > 0) {
+      setSelectedUser(filteredUsers[0]);
+    }
+  }, [filteredUsers]);
+
+  useEffect(() => {
+    handleSelectTab(tabNames.indexOf(selectedTab));
+  }, [searchQuery]);
 
   const handleSelectUser = (username: string): void => {
     const userProfile = users.find((user) => user.username === username);
     setSelectedUser(userProfile || null);
   };
 
-  const handleSelectTab = (tabIndex: number): void => {
+  const handleSelectTab = (tabIndex: number, query: string = searchQuery): void => {
     const tab = tabNames[tabIndex];
     setSelectedTab(tab);
     if (tab === "All") {
-      setFilteredUsers(users);
+      setFilteredUsers(users.filter(user => user.username.toLowerCase().includes(query.toLowerCase())));
     } else {
-      const newFilteredUsers = users.filter((user) => user.platform === tab);
+      const newFilteredUsers = users.filter((user) => user.platform === tab && user.username.toLowerCase().includes(query.toLowerCase()));
       setFilteredUsers(newFilteredUsers);
     }
+  };
+
+  const handleSearch = (query: string): void => {
+    setSearchQuery(query);
+    handleSelectTab(tabNames.indexOf(selectedTab), query);
   };
 
   const handleSendMessage = (message: string, attachment?: ConversationAttachment): void => {
@@ -78,6 +102,12 @@ const App: React.FC = () => {
     }));
 
     setConversation((prevConversation) => [...prevConversation, newMessage]);
+
+    // Clear the draft reply for the current user after sending the message
+    setDraftReplies((prevDrafts) => ({
+      ...prevDrafts,
+      [selectedUser.username]: "",
+    }));
   };
 
   const toggleProfilePreview = () => {
@@ -129,7 +159,7 @@ const App: React.FC = () => {
       <Box
         sx={{
           background: 'linear-gradient(135deg, #e3f2fd 30%, #ffebee 90%)',
-          minHeight: '100vh',
+          minHeight: '20vh',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -148,12 +178,13 @@ const App: React.FC = () => {
           </Grid>
           <Grid item xs={12} md={3}>
             <Paper elevation={3} sx={{ maxHeight: "calc(100vh - 140px)", overflowY: "auto" }}>
-              <SearchBar onSearch={setSearchQuery} />
+              <SearchBar onSearch={handleSearch} />
               <MessageListt
                 users={filteredUsers}
                 onSelectUser={handleSelectUser}
                 selectedUser={selectedUser ? selectedUser.username : ""}
                 selectedTab={selectedTab}
+                readConversations={readConversations}
               />
             </Paper>
           </Grid>
@@ -164,6 +195,8 @@ const App: React.FC = () => {
               selectedUser={selectedUser || users[0]}
               onHeaderClick={toggleProfilePreview}
               onAddReaction={handleAddReaction}
+              draftReplies={draftReplies}
+              setDraftReplies={setDraftReplies}
             />
           </Grid>
           {isProfilePreviewOpen && selectedUser && (
