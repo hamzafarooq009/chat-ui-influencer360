@@ -23,7 +23,6 @@ export interface GetContactResponse {
     follower_count: number,
 }
 
-
 // Interface for getting the conversations for left side bar.
 export interface GetConversationsRequest {
     // Conversations from particular platform.

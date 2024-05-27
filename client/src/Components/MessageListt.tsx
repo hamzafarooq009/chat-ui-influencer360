@@ -58,6 +58,10 @@ const MessageListt: React.FC<MessageListProps> = ({
   }, [users]);
 
   const loadMoreUsers = () => {
+    if (paginatedUsers.length >= users.length) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
       const newUsers = users.slice(0, page * USERS_PER_PAGE);
@@ -68,7 +72,7 @@ const MessageListt: React.FC<MessageListProps> = ({
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop === clientHeight && !loading) {
+    if (scrollHeight - scrollTop === clientHeight && !loading && paginatedUsers.length < users.length) {
       setPage((prevPage) => prevPage + 1);
     }
   };
@@ -178,7 +182,7 @@ const MessageListt: React.FC<MessageListProps> = ({
             </Typography>
           </ListItem>
         ))}
-        {loading && (
+        {loading && paginatedUsers.length < users.length && (
           <Box display="flex" justifyContent="center" mt={2}>
             <CircularProgress />
           </Box>
