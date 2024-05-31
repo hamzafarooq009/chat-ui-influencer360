@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 
-const SearchBar = ({ onSearch }) => {
+interface SearchBarProps {
+  onSearch: (query: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onSearch(e.target.value);
+  };
+
   return (
     <TextField
       fullWidth
@@ -15,7 +23,7 @@ const SearchBar = ({ onSearch }) => {
           </InputAdornment>
         ),
       }}
-      onChange={(e) => onSearch(e.target.value)}
+      onChange={handleSearchChange}
     />
   );
 };

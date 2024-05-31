@@ -7,6 +7,10 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 
+interface NavigationProps {
+  onChangeTab: (newValue: number) => void;
+}
+
 const StyledTabs = styled(Tabs)({
   '& .MuiTabs-indicator': {
     display: 'flex',
@@ -20,7 +24,7 @@ const StyledTabs = styled(Tabs)({
   },
 });
 
-const StyledTab = styled((props) => <Tab disableRipple {...props} />)(({ theme }) => ({
+const StyledTab = styled((props: { label: string }) => <Tab disableRipple {...props} />)(({ theme }) => ({
   textTransform: 'none',
   minWidth: 0,
   [theme.breakpoints.up('sm')]: {
@@ -42,10 +46,10 @@ const StyledTab = styled((props) => <Tab disableRipple {...props} />)(({ theme }
   },
 }));
 
-const Navigation = ({ onChangeTab }) => {
-  const [value, setValue] = useState(0);
+const Navigation: React.FC<NavigationProps> = ({ onChangeTab }) => {
+  const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
     onChangeTab(newValue);
   };
@@ -60,6 +64,9 @@ const Navigation = ({ onChangeTab }) => {
             variant="scrollable"
             scrollButtons="auto"
             aria-label="navigation tabs"
+            TabIndicatorProps={{
+              children: <span />,
+            }}
           >
             <StyledTab label="All messages" />
             <StyledTab label="Messenger" />

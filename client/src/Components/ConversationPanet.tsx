@@ -12,9 +12,14 @@ import {
   Card,
   CardHeader,
   Tooltip,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
+// import AttachFileIcon from "@mui/icons-material/AttachFile";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import CloseIcon from "@mui/icons-material/Close";
+import { ClickAwayListener } from "@mui/material";
 import Picker, { EmojiClickData } from "emoji-picker-react";
 
 // Import interfaces
@@ -45,6 +50,7 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
   const [pickerPosition, setPickerPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [emojiPickerSide, setEmojiPickerSide] = useState<'left' | 'right'>('right');
+  const [openImage, setOpenImage] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -81,15 +87,29 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
 
     // Handle image attachments
     if (attachment.type === AttachmentType.MEDIA_SHARE) {
-      return <img src={attachment.payload} alt="attachment" style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '8px' }} />;
+      return (
+        <Box
+          component="img"
+          src={attachment.payload}
+          alt="attachment"
+          onClick={() => setOpenImage(attachment.payload)}
+          sx={{
+            maxWidth: '300px',
+            maxHeight: '300px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            backgroundColor: 'transparent', // Ensure no background color
+          }}
+        />
+      );
     }
     // Handle non-image attachments
     else if (attachment.type === AttachmentType.NON_MEDIA_FILE) {
       const fileName = attachment.payload.split('/').pop() || "file";
       return (
-        <a href={attachment.payload} download={fileName} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'white' }}>
+        <a href={attachment.payload} download={fileName} target="_blank" rel="noopener noreferrer">
           <IconButton color="primary">
-            <AttachFileIcon />
+            <FileDownloadIcon />
             <Typography variant="caption" component="span" ml={1}>
               {fileName}
             </Typography>
@@ -165,12 +185,10 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
                           p: 2,
                           my: 1,
                           maxWidth: "75%",
-                          bgcolor: msg.from === "You" ? "#A020F0" : "#f1f3f4",
+                          bgcolor: (msg.from === "You" && msg.attachment.type === AttachmentType.NONE) ? "#A020F0" : "transparent",
                           color: msg.from === "You" ? "#ffffff" : "#000000",
                           borderRadius: "20px",
                           marginLeft: msg.from === "You" ? "auto" : 0,
-                          position: "relative",
-                          cursor: "pointer",
                         }}
                       >
                         <Typography
@@ -179,27 +197,52 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
                           display="block"
                           sx={{
                             fontSize: "14px",
-                            fontWeight: msg.from === "You" ? "normal" : "normal",
-                            color: msg.from === "You" ? "#ffffff" : "#000000",
+                            fontWeight: "normal",
+                            color: msg.attachment.type === AttachmentType.NONE ? "FFFFFF" : "#000000",
                           }}
                         >
                           {msg.message}
                         </Typography>
 
                         {msg.attachment && msg.attachment.type !== null && renderAttachment(msg.attachment)}
-
-                        <Box display="flex" mt={1}>
-                          {msg.reactions.map((reaction, idx) => (
-                            <Typography key={idx} component="span" variant="body2" mr={1}>
-                              {reaction.reaction} ({reaction.user.length})
-                            </Typography>
-                          ))}
-                        </Box>
                       </Card>
+
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: msg.from === "You" ? "auto" : 0,
+                          right: msg.from === "You" ? 0 : "auto",
+                          display: "flex",
+                          alignItems: "center",
+                          mt: 2,
+                          px: 3,
+                          width: "100%",
+                          justifyContent: msg.from === "You" ? "flex-end" : "flex-start",
+                        }}
+                      >
+                        {msg.reactions.map((reaction, idx) => (
+                          <Typography
+                            key={idx}
+                            component="span"
+                            variant="body2"
+                            sx={{
+                              border: "1px solid white",
+                              borderRadius: "2px",
+                              padding: "2px 4px",
+                              backgroundColor: "rgba(255, 255, 255, 0.1)", // optional background color for better visibility
+                              mr: 1,
+                              bgcolor: "white"
+                            }}
+                          >
+                            {reaction.reaction} {reaction.user.length}
+                          </Typography>
+                        ))}
+                      </Box>
+
                       <IconButton
                         className="hover-visible"
                         color="primary"
-                        
                         onClick={(e) => handleShowEmojiPicker(e, msg.id, msg.from === "You" ? 'left' : 'right')}
                         sx={{
                           marginLeft: 1,
@@ -232,6 +275,7 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
       </Paper>
 
       {showEmojiPicker && (
+      <ClickAwayListener onClickAway={() => setShowEmojiPicker(false)}>
         <Box
           sx={{
             position: "absolute",
@@ -250,7 +294,33 @@ const ConversationPanet: React.FC<ConversationPanetProps> = ({
         >
           <Picker onEmojiClick={handleEmojiClick} />
         </Box>
-      )}
+      </ClickAwayListener>
+    )}
+    
+
+      <Dialog open={Boolean(openImage)} onClose={() => setOpenImage(null)} maxWidth="md" fullWidth>
+        <DialogContent>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setOpenImage(null)}
+            aria-label="close"
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Box
+            component="img"
+            src={openImage || ''}
+            alt="attachment"
+            sx={{
+              width: '100%',
+              height: 'auto',
+              borderRadius: '8px',
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
